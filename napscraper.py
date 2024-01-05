@@ -44,19 +44,19 @@ def crawl_website(url):
         for _ in range(retries):
             try:
                 emails = list(islice(search(email_search_query), 5))
-                return {
-                    'Addresses': addresses,
-                    'Phones': phones,
-                    'Emails': emails
-                }
+                break  # Break the loop if the search succeeds
             except requests.exceptions.ReadTimeout:
                 print("Timeout error. Retrying...")
                 time.sleep(2)  # Add a delay before retrying
+        else:
+            # This block will be executed if the loop completes without a successful search
+            print("Google search timed out. Continuing with other tasks.")
+            emails = []
 
         return {
             'Addresses': addresses,
             'Phones': phones,
-            'Emails': []
+            'Emails': emails
         }
     else:
         return None
