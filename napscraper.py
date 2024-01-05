@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from googlesearch import search
 import re
 from itertools import islice
+import time
 
 def crawl_website(url):
     response = requests.get(url)
@@ -39,7 +40,7 @@ def crawl_website(url):
         # Search Google for email addresses associated with the domain
         domain = url.split('//')[1].split('/')[0]
         email_search_query = f'site:{domain} email'
-        emails = list(islice(search(email_search_query, num=5, pause=2), 5))
+        emails = list(islice(search(email_search_query), 5))
 
         return {
             'Addresses': addresses,
