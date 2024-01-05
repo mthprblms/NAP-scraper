@@ -37,15 +37,26 @@ def crawl_website(url):
                     addresses.extend(contact_page_soup.find_all(string=address_patterns))
                     phones.extend(contact_page_soup.find_all(string=phone_patterns))
 
-        # Search Google for email addresses associated with the domain
+        # Search Google for email addresses associated with the domain with retry mechanism
         domain = url.split('//')[1].split('/')[0]
         email_search_query = f'site:{domain} email'
-        emails = list(islice(search(email_search_query), 5))
+        retries = 3
+        for _ in range(retries):
+            try:
+                emails = list(islice(search(email_search_query), 5))
+                return {
+                    'Addresses': addresses,
+                    'Phones': phones,
+                    'Emails': emails
+                }
+            except requests.exceptions.ReadTimeout:
+                print("Timeout error. Retrying...")
+                time.sleep(2)  # Add a delay before retrying
 
         return {
             'Addresses': addresses,
             'Phones': phones,
-            'Emails': emails
+            'Emails': []
         }
     else:
         return None
